@@ -62,14 +62,14 @@ ngx_http_mytest(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     ngx_http_core_loc_conf_t  *clcf;
 
-    //Ê×ÏÈÕÒµ½mytestÅäÖÃÏîËùÊôµÄÅäÖÃ¿é£¬clcfÃ²ËÆÊÇlocation¿éÄÚµÄÊı¾İ
-//½á¹¹£¬ÆäÊµ²»È»£¬Ëü¿ÉÒÔÊÇmain¡¢srv»òÕßloc¼¶±ğÅäÖÃÏî£¬Ò²¾ÍÊÇËµÔÚÃ¿¸ö
-//http{}ºÍserver{}ÄÚÒ²¶¼ÓĞÒ»¸öngx_http_core_loc_conf_t½á¹¹Ìå
+    //é¦–å…ˆæ‰¾åˆ°mytesté…ç½®é¡¹æ‰€å±çš„é…ç½®å—ï¼Œclcfè²Œä¼¼æ˜¯locationå—å†…çš„æ•°æ®
+//ç»“æ„ï¼Œå…¶å®ä¸ç„¶ï¼Œå®ƒå¯ä»¥æ˜¯mainã€srvæˆ–è€…locçº§åˆ«é…ç½®é¡¹ï¼Œä¹Ÿå°±æ˜¯è¯´åœ¨æ¯ä¸ª
+//http{}å’Œserver{}å†…ä¹Ÿéƒ½æœ‰ä¸€ä¸ªngx_http_core_loc_conf_tç»“æ„ä½“
     clcf = ngx_http_conf_get_module_loc_conf(cf, ngx_http_core_module);
 
-    //http¿ò¼ÜÔÚ´¦ÀíÓÃ»§ÇëÇó½øĞĞµ½NGX_HTTP_CONTENT_PHASE½×¶ÎÊ±£¬Èç¹û
-//ÇëÇóµÄÖ÷»úÓòÃû¡¢URIÓëmytestÅäÖÃÏîËùÔÚµÄÅäÖÃ¿éÏàÆ¥Åä£¬¾Í½«µ÷ÓÃÎÒÃÇ
-//ÊµÏÖµÄngx_http_mytest_handler·½·¨´¦ÀíÕâ¸öÇëÇó
+    //httpæ¡†æ¶åœ¨å¤„ç†ç”¨æˆ·è¯·æ±‚è¿›è¡Œåˆ°NGX_HTTP_CONTENT_PHASEé˜¶æ®µæ—¶ï¼Œå¦‚æœ
+//è¯·æ±‚çš„ä¸»æœºåŸŸåã€URIä¸mytesté…ç½®é¡¹æ‰€åœ¨çš„é…ç½®å—ç›¸åŒ¹é…ï¼Œå°±å°†è°ƒç”¨æˆ‘ä»¬
+//å®ç°çš„ngx_http_mytest_handleræ–¹æ³•å¤„ç†è¿™ä¸ªè¯·æ±‚
     clcf->handler = ngx_http_mytest_handler;
 
     return NGX_CONF_OK;
@@ -78,61 +78,61 @@ ngx_http_mytest(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
 static ngx_int_t ngx_http_mytest_handler(ngx_http_request_t *r)
 {
-    //±ØĞëÊÇGET»òÕßHEAD·½·¨£¬·ñÔò·µ»Ø405 Not Allowed
+    //å¿…é¡»æ˜¯GETæˆ–è€…HEADæ–¹æ³•ï¼Œå¦åˆ™è¿”å›405 Not Allowed
     if (!(r->method & (NGX_HTTP_GET | NGX_HTTP_HEAD)))
     {
         return NGX_HTTP_NOT_ALLOWED;
     }
 
-    //¶ªÆúÇëÇóÖĞµÄ°üÌå
+    //ä¸¢å¼ƒè¯·æ±‚ä¸­çš„åŒ…ä½“
     ngx_int_t rc = ngx_http_discard_request_body(r);
     if (rc != NGX_OK)
     {
         return rc;
     }
 
-    //ÉèÖÃ·µ»ØµÄContent-Type¡£×¢Òâ£¬ngx_str_tÓĞÒ»¸öºÜ·½±ãµÄ³õÊ¼»¯ºê
-//ngx_string£¬Ëü¿ÉÒÔ°Ñngx_str_tµÄdataºÍlen³ÉÔ±¶¼ÉèÖÃºÃ
+    //è®¾ç½®è¿”å›çš„Content-Typeã€‚æ³¨æ„ï¼Œngx_str_tæœ‰ä¸€ä¸ªå¾ˆæ–¹ä¾¿çš„åˆå§‹åŒ–å®
+//ngx_stringï¼Œå®ƒå¯ä»¥æŠŠngx_str_tçš„dataå’Œlenæˆå‘˜éƒ½è®¾ç½®å¥½
     ngx_str_t type = ngx_string("text/plain");
-    //·µ»ØµÄ°üÌåÄÚÈİ
+    //è¿”å›çš„åŒ…ä½“å†…å®¹
     ngx_str_t response = ngx_string("Hello World!");
-    //ÉèÖÃ·µ»Ø×´Ì¬Âë
+    //è®¾ç½®è¿”å›çŠ¶æ€ç 
     r->headers_out.status = NGX_HTTP_OK;
-    //ÏìÓ¦°üÊÇÓĞ°üÌåÄÚÈİµÄ£¬ËùÒÔĞèÒªÉèÖÃContent-Length³¤¶È
+    //å“åº”åŒ…æ˜¯æœ‰åŒ…ä½“å†…å®¹çš„ï¼Œæ‰€ä»¥éœ€è¦è®¾ç½®Content-Lengthé•¿åº¦
     r->headers_out.content_length_n = response.len;
-    //ÉèÖÃContent-Type
+    //è®¾ç½®Content-Type
     r->headers_out.content_type = type;
 
-    //·¢ËÍhttpÍ·²¿
+    //å‘é€httpå¤´éƒ¨
     rc = ngx_http_send_header(r);
     if (rc == NGX_ERROR || rc > NGX_OK || r->header_only)
     {
         return rc;
     }
 
-    //¹¹Ôìngx_buf_t½á¹¹×¼±¸·¢ËÍ°üÌå
+    //æ„é€ ngx_buf_tç»“æ„å‡†å¤‡å‘é€åŒ…ä½“
     ngx_buf_t                 *b;
     b = ngx_create_temp_buf(r->pool, response.len);
     if (b == NULL)
     {
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
     }
-    //½«Hello World¿½±´µ½ngx_buf_tÖ¸ÏòµÄÄÚ´æÖĞ
+    //å°†Hello Worldæ‹·è´åˆ°ngx_buf_tæŒ‡å‘çš„å†…å­˜ä¸­
     ngx_memcpy(b->pos, response.data, response.len);
-    //×¢Òâ£¬Ò»¶¨ÒªÉèÖÃºÃlastÖ¸Õë
+    //æ³¨æ„ï¼Œä¸€å®šè¦è®¾ç½®å¥½lastæŒ‡é’ˆ
     b->last = b->pos + response.len;
-    //ÉùÃ÷ÕâÊÇ×îºóÒ»¿é»º³åÇø
+    //å£°æ˜è¿™æ˜¯æœ€åä¸€å—ç¼“å†²åŒº
     b->last_buf = 1;
 
-    //¹¹Ôì·¢ËÍÊ±µÄngx_chain_t½á¹¹Ìå
+    //æ„é€ å‘é€æ—¶çš„ngx_chain_tç»“æ„ä½“
     ngx_chain_t		out;
-    //¸³Öµngx_buf_t
+    //èµ‹å€¼ngx_buf_t
     out.buf = b;
-    //ÉèÖÃnextÎªNULL
+    //è®¾ç½®nextä¸ºNULL
     out.next = NULL;
 
-    //×îºóÒ»²½·¢ËÍ°üÌå£¬http¿ò¼Ü»áµ÷ÓÃngx_http_finalize_request·½·¨
-//½áÊøÇëÇó
+    //æœ€åä¸€æ­¥å‘é€åŒ…ä½“ï¼Œhttpæ¡†æ¶ä¼šè°ƒç”¨ngx_http_finalize_requestæ–¹æ³•
+//ç»“æŸè¯·æ±‚
     return ngx_http_output_filter(r, &out);
 }
 
